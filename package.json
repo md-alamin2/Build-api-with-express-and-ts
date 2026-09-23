@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "name": "build-api-with-ts-and-express",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx tsx watch ./src/server.ts"
+
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
