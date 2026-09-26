@@ -1,7 +1,8 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, Router } from "express";
 import config from "./config/index";
 import initDB, { pool } from "./config/db";
 import { userRoutes } from "./modules/users/user.routes";
+import { todoRouters } from "./modules/todos/todo.routes";
 
 const app = express();
 const { port } = config;
@@ -19,26 +20,8 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/users", userRoutes);
 
 // todo CRUD
-app.post("/todos", async (req: Request, res: Response) => {
-  const { user_id, title } = req.body;
-  try {
-    const result = await pool.query(
-      `INSERT INTO todos(user_id, title) VALUES($1, $2) RETURNING *`,
-      [user_id, title],
-    );
+app.use('/todos', todoRouters)
 
-    res.status(201).json({
-      success: true,
-      message: "Todo added successfully",
-      data: result.rows[0],
-    });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
-});
 
 app.get("/todos", async (req: Request, res: Response) => {
   try {
