@@ -1,9 +1,10 @@
 import express, { Request, Response } from "express";
-import config from './config/index'
+import config from "./config/index";
 import initDB, { pool } from "./config/db";
+import { userRoutes } from "./modules/users/user.routes";
 
 const app = express();
-const {port} = config
+const { port } = config;
 
 initDB();
 
@@ -15,128 +16,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // users CRUD
-app.post("/users", async (req: Request, res: Response) => {
-  const { name, email } = req.body;
-
-  try {
-    const result = await pool.query(
-      `INSERT INTO users(name, email) VALUES($1, $2) RETURNING *`,
-      [name, email],
-    );
-
-    // console.log(result)
-    res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      data: result.rows[0],
-    });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
-});
-
-app.get("/users", async (req: Request, res: Response) => {
-  try {
-    const result = await pool.query(`SELECT * FROM users`);
-
-    res.status(200).json({
-      success: true,
-      message: "Users retrieved successfully",
-      data: result.rows,
-    });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-      details: err,
-    });
-  }
-});
-
-// get single user
-app.get("/users/:id", async (req: Request, res: Response) => {
-  const id = req.params.id;
-  try {
-    const result = await pool.query(`SELECT * FROM users WHERE id = $1`, [id]);
-
-    if (result.rows.length === 0) {
-      res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: "User retrieved successfully",
-        data: result.rows[0],
-      });
-    }
-  } catch (err: any) {
-    res.status(404).json({
-      success: false,
-      message: err.message,
-    });
-  }
-});
-
-// user update
-app.put("/users/:id", async (req: Request, res: Response) => {
-  const id = req.params.id;
-  const { name, email } = req.body;
-  try {
-    const result = await pool.query(
-      `UPDATE users SET name=$1 WHERE id=$2 RETURNING *`,
-      [name, id],
-    );
-
-    if (result.rows.length === 0) {
-      res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: "User updated successfully",
-        data: result.rows[0],
-      });
-    }
-  } catch (err: any) {
-    res.status(404).json({
-      success: false,
-      message: err.message,
-    });
-  }
-});
-
-// user delete
-app.delete("/users/:id", async (req: Request, res: Response) => {
-  const id = req.params.id;
-  try {
-    const result = await pool.query(`DELETE FROM users WHERE id = $1`, [id]);
-
-    if (result.rowCount === 0) {
-      res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: "User deleted successfully",
-        data: null,
-      });
-    }
-  } catch (err: any) {
-    res.status(404).json({
-      success: false,
-      message: err.message,
-    });
-  }
-});
+app.use("/users", userRoutes);
 
 // todo CRUD
 app.post("/todos", async (req: Request, res: Response) => {
