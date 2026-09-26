@@ -3,6 +3,7 @@ import config from "./config/index";
 import initDB, { pool } from "./config/db";
 import { userRoutes } from "./modules/users/user.routes";
 import { todoRouters } from "./modules/todos/todo.routes";
+import { authRouters } from "./modules/auth/auth.routes";
 
 const app = express();
 const { port } = config;
@@ -21,6 +22,9 @@ app.use("/users", userRoutes);
 
 // todo CRUD
 app.use('/todos', todoRouters)
+
+// auth routs
+app.use('/auth', authRouters)
 
 // 404 route
 app.use((req, res) => {
